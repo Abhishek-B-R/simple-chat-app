@@ -45,7 +45,10 @@ export default function Chat({
       useEffect(()=>{
         if(ws==null){return}
         ws.onmessage = (event) => {
-          setMessages([...messages,event.data])
+          if(JSON.parse(event.data).type==='chat'){
+            setMessages([...messages,event.data])
+            console.log(event.data)
+          }
         }
       },[messages,ws])
 

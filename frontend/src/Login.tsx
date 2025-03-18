@@ -1,15 +1,16 @@
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
 export default function Login({ 
     ws,
     setLogin,
-    nameRef
+    nameRef,
+    roomRef
 }: {
     ws: WebSocket, 
     setLogin: Dispatch<SetStateAction<boolean>> 
-    nameRef:React.RefObject<HTMLInputElement | null>
+    nameRef:React.RefObject<HTMLInputElement | null>,
+    roomRef: React.RefObject<HTMLInputElement | null>
 }) {
-  const roomRef = useRef<HTMLInputElement>(null);
 
   function submitFn() {
     if (!ws || ws.readyState !== WebSocket.OPEN) {
