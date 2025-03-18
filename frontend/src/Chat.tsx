@@ -35,7 +35,7 @@ export default function Chat({
     }
 
     function logout(){
-      console.log(name,room)
+      // console.log(name,room)
         ws.send(JSON.stringify({
           "type":"exit",
           "payload":{
@@ -43,7 +43,6 @@ export default function Chat({
               "name":name
           }
       }))
-        console.log("logged out called")
         setLogin(false)
     }
     
@@ -52,7 +51,6 @@ export default function Chat({
         ws.onmessage = (event) => {
           if(JSON.parse(event.data).type==='chat'){
             setMessages([...messages,event.data])
-            console.log(event.data)
           }else if(JSON.parse(event.data).type==='participant'){
             setParticipants(JSON.parse(event.data).name)
           }

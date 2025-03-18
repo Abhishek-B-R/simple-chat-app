@@ -34,7 +34,7 @@ export default function Login({
       return;
     }
 
-    console.log(`Sending: ${name} to ${room}`);
+    // console.log(`Sending: ${name} to ${room}`);
     setName(name)
     setRoom(room)
     ws.send(

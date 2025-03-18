@@ -54,7 +54,7 @@ wss.on("connection",(socket:WebSocket)=>{
                 const roomId=parsedMessage.payload.room
                 const name=parsedMessage.payload.name
 
-                console.log(name,roomId)
+                // console.log(name,roomId)
 
                 allSocket=allSocket.filter((e)=>{
                     return !(e.room===roomId && e.name===name)
@@ -83,7 +83,6 @@ wss.on("connection",(socket:WebSocket)=>{
             }
 
             socket.on("close", () => {
-                console.log("someone left")
                 allSocket=allSocket.filter(e=>e.socket!==socket);
 
                 const allNames: string[] = []
