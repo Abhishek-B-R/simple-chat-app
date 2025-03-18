@@ -1,14 +1,15 @@
 import "./App.css";
 import { useState, useEffect, useRef } from "react";
-import Participants from "./Participants";
 import Login from "./Login";
-// import Chat from "./Chat";
+import Chat from "./Chat";
 
 function App() {
   const [login, setLogin] = useState(false);
   const wsRef = useRef<WebSocket | null>(null); 
   const roomRef = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
+  const [name,setName]=useState("")
+  const [room, setRoom]=useState("")
   const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {
@@ -21,20 +22,8 @@ function App() {
     wsRef.current.onerror = (error) => console.error("WebSocket Error", error);
     wsRef.current.onclose = () => console.log("WebSocket Closed");
 
-    const roomRefVal=roomRef.current
-    const nameRefVal=nameRef.current
     return () => {
-      const ws=wsRef.current
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
-          "type":"exit",
-          "payload":{
-              "room":roomRefVal,
-              "name":nameRefVal,
-          }
-        }))
-        ws.close();
-      }
+        wsRef.current?.close();
     };
   }, []);
 
@@ -44,11 +33,10 @@ function App() {
 
   return (
     <div>
-      {/* <Chat ws={wsRef.current as WebSocket} nameRef={nameRef} setLogin={setLogin} /> :  */}
       {login ?
-      <Participants ws={wsRef.current as WebSocket}/> :
-      <Login ws={wsRef.current as WebSocket} nameRef={nameRef} roomRef={roomRef} setLogin={setLogin} />}
-      
+      <Chat ws={wsRef.current as WebSocket} name={name} room={room} setLogin={setLogin} /> : 
+      <Login ws={wsRef.current as WebSocket} setName={setName} setRoom={setRoom}
+       nameRef={nameRef} roomRef={roomRef} setLogin={setLogin} />}
     </div>
   );
 }

@@ -1,17 +1,23 @@
 import React,{useEffect,useRef,useState } from 'react'
+import { Input } from "./components/ui/input";
+import { Button } from "./components/ui/button";
+import { ScrollArea } from "./components/ui/scroll-area";
+import Participants from './Participants';
 export default function Chat({
     ws,
     setLogin,
-    nameRef
+    name,
+    room
   }:
   {
     ws:WebSocket,
     setLogin:React.Dispatch<React.SetStateAction<boolean>>,
-    nameRef:React.RefObject<HTMLInputElement | null>
+    name:string,
+    room:string
   }){
     const inputRef = useRef<HTMLInputElement | null>(null)
     const [messages,setMessages] = useState<string[]>([])
-    const [name]=useState(nameRef.current?.value)
+    const [participants,setParticipants]=useState<string[]>([])
     
     function submitFn(){
         if(inputRef.current==null || ws==null){return}
@@ -28,19 +34,18 @@ export default function Chat({
         inputRef.current.value=''
     }
 
-    function handleKeyPress(e:KeyboardEvent){
-        if(e.key==="Enter"){
-        submitFn()
-        }
-    }
-
     function logout(){
+      console.log(name,room)
+        ws.send(JSON.stringify({
+          "type":"exit",
+          "payload":{
+              "room":room,
+              "name":name
+          }
+      }))
+        console.log("logged out called")
         setLogin(false)
     }
-    
-    useEffect(()=>{
-        document.addEventListener('keydown', handleKeyPress);
-      })
     
       useEffect(()=>{
         if(ws==null){return}
@@ -48,30 +53,66 @@ export default function Chat({
           if(JSON.parse(event.data).type==='chat'){
             setMessages([...messages,event.data])
             console.log(event.data)
+          }else if(JSON.parse(event.data).type==='participant'){
+            setParticipants(JSON.parse(event.data).name)
           }
         }
       },[messages,ws])
 
       return (
-        <div className='ml-96 pl-96 mt-0 '>
-          <h1 className='h-10 font-semibold p-10'>WebSocket Chat App</h1>
-          <button onClick={logout} className='bg-amber-600 text-black p-2 '>LogOut</button>
-          <div>
-            <h2 className='text-2xl p-10'>Messages:</h2>
-            {messages.filter(message => {
-              const parsedMessage=JSON.parse(message)
-              return parsedMessage.message && parsedMessage.message.trim() !== ""
-            }) 
-            .map((message,index) => {
-              const parsedMessage=JSON.parse(message)
-              return <p className='bg-white text-zinc-800 max-w-80 border-2 p-2' 
-              key={index}>{parsedMessage.name}: {parsedMessage.message}</p>
-            })}
+        <div className="h-screen w-full flex bg-background"> 
+          <Participants logout={logout} participants={participants}/>
+
+          {/* Chat Section */}
+        <div className="w-5/6 ml-80 flex flex-col">
+        {/* Chat Header */}
+        <div className="flex justify-between items-center mr-0 p-4 border-b border-gray-700">
+          <h1 className="text-2xl font-bold">WebSocket Chat App</h1>
+          <Button className="bg-red-600 hover:bg-red-700" onClick={logout}>
+            Log Out
+          </Button>
+        </div>
+
+         {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col">
+        
+        <ScrollArea className="flex-1 px-4">
+          <div className="py-4 space-y-4">
+            {messages
+              .filter(message => {
+                const parsedMessage = JSON.parse(message);
+                return parsedMessage.message && parsedMessage.message.trim() !== "";
+              })
+              .map((message, index) => {
+                const parsedMessage = JSON.parse(message);
+                return (
+                  <div
+                    key={index}
+                    className="max-w-[80%] break-words rounded-lg p-3 bg-primary/10"
+                  >
+                    <p className="font-semibold text-sm text-primary">
+                      {parsedMessage.name}
+                    </p>
+                    <p className="text-sm mt-1">{parsedMessage.message}</p>
+                  </div>
+                );
+              })}
           </div>
-          <div className='font-bold'>
-            <input type="text" ref={inputRef} placeholder="Enter your message" className='bg-black text-white h-10'/>
-            <button onClick={submitFn} className='bg-amber-500 w-20 h-10 ml-2'>Submit</button>
+        </ScrollArea>
+
+        <div className="p-4 border-t bg-background/95 backdrop-blur  supports-[backdrop-filter]:bg-background/60">
+          <div className="flex space-x-2 max-w-[1200px] mx-auto">
+            <Input
+              ref={inputRef}
+              placeholder="Type your message..."
+              className="flex-1 border-black border-2 h-10"
+              onKeyDown={(e) => e.key === 'Enter' && submitFn()}
+            />
+            <Button onClick={submitFn}>Send</Button>
           </div>
         </div>
-      )
+      </div>
+      </div>
+    </div>
+   )
 }

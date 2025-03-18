@@ -1,15 +1,23 @@
 import { Dispatch, SetStateAction, useEffect } from "react";
+import { Input } from "./components/ui/input";
+import { Button } from "./components/ui/button";
+import { Card } from "./components/ui/card";
+import { MessageSquare } from "lucide-react";
 
 export default function Login({ 
     ws,
     setLogin,
     nameRef,
-    roomRef
+    roomRef,
+    setName,
+    setRoom
 }: {
     ws: WebSocket, 
     setLogin: Dispatch<SetStateAction<boolean>> 
     nameRef:React.RefObject<HTMLInputElement | null>,
-    roomRef: React.RefObject<HTMLInputElement | null>
+    roomRef: React.RefObject<HTMLInputElement | null>,
+    setName:React.Dispatch<React.SetStateAction<string>>,
+    setRoom: React.Dispatch<React.SetStateAction<string>>
 }) {
 
   function submitFn() {
@@ -27,6 +35,8 @@ export default function Login({
     }
 
     console.log(`Sending: ${name} to ${room}`);
+    setName(name)
+    setRoom(room)
     ws.send(
       JSON.stringify({
         type: "join",
@@ -53,23 +63,36 @@ export default function Login({
   }); // Add cleanup
 
   return (
-    <div className="flex flex-col items-center justify-center p-6 pt-80 bg-gray-900 rounded-2xl shadow-lg space-y-4">
-        <input
-            placeholder="Enter name"
-            ref={nameRef}
-            className="w-60 px-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-            placeholder="Enter room ID"
-            ref={roomRef}
-            className="w-60 px-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
+    <div className="min-h-screen  w-full flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
+      <Card className="w-[400px] p-6 space-y-6">
+        <div className="space-y-2 text-center">
+          <MessageSquare className="mx-auto h-12 w-12 text-primary" />
+          <h1 className="text-2xl font-bold tracking-tight">Welcome to Chat</h1>
+          <p className="text-sm text-muted-foreground">Enter your details to join a room</p>
+        </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Input
+              placeholder="Your name"           
+              ref={nameRef}
+
+            />
+          </div>
+          <div className="space-y-2">
+            <Input
+              placeholder="Room number"
+              ref={roomRef}
+            />
+          </div>
+          <Button 
+            className="w-full" 
             onClick={submitFn}
-            className="w-60 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition duration-200 shadow-md"
-        >
-            Submit
-        </button>
+            // disabled={!nameRef.current?.value || !roomRef.current?.value}
+          >
+            Join Room
+          </Button>
+        </div>
+      </Card>
     </div>
 
   );
