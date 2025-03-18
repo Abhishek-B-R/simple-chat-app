@@ -1,0 +1,8 @@
+{
+    "type":"join",
+    "payload":{
+        "room":"123",
+        "name":"abhi",
+        "message":"hi there"
+    }
+}

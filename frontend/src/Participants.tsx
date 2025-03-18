@@ -6,7 +6,7 @@ export default function Participants({logout,participants}:
   {logout:()=>void,participants: string[]})
   {
       return (
-        <div className='bg-emerald-900 text-white fixed h-full'>
+        <div className='bg-emerald-900 text-white fixed h-full hidden md:block'>
             <div className="w-72 border-r flex flex-col">
               <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center space-x-2">

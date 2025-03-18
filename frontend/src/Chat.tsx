@@ -64,7 +64,7 @@ export default function Chat({
           <Participants logout={logout} participants={participants}/>
 
           {/* Chat Section */}
-        <div className="w-5/6 ml-80 flex flex-col">
+        <div className="w-full md:ml-80 flex flex-col">
         {/* Chat Header */}
         <div className="flex justify-between items-center mr-0 p-4 border-b border-gray-700">
           <h1 className="text-2xl font-bold">WebSocket Chat App</h1>

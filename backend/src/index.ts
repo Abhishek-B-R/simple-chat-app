@@ -14,10 +14,9 @@ wss.on("connection",(socket:WebSocket)=>{
         const parsedMessage = JSON.parse(e.toString());
 
         try{
-
+            const roomId=parsedMessage.payload.room
+            const name=parsedMessage.payload.name
             if(parsedMessage.type==="join"){
-                const roomId=parsedMessage.payload.room
-                const name=parsedMessage.payload.name
 
                 allSocket.push({
                     socket,
@@ -58,7 +57,6 @@ wss.on("connection",(socket:WebSocket)=>{
                 console.log(name,roomId)
 
                 allSocket=allSocket.filter((e)=>{
-                    console.log(e.room,e.name)
                     return !(e.room===roomId && e.name===name)
                 })
                 
@@ -80,8 +78,29 @@ wss.on("connection",(socket:WebSocket)=>{
                 })
                 socket.send(JSON.stringify(allNames))
             }
+            else{
+                console.log("Unknown type of message")
+            }
+
+            socket.on("close", () => {
+                console.log("someone left")
+                allSocket=allSocket.filter(e=>e.socket!==socket);
+
+                const allNames: string[] = []
+                allSocket.filter((e)=>e.room===roomId).forEach((e)=>{
+                    allNames.push(e.name)
+                })
+
+                allSocket.filter((e)=>e.room===roomId).forEach((e)=>{
+                    e.socket.send(JSON.stringify({
+                        type:"participant",
+                        name:allNames
+                    }))
+                })
+            });
         }catch(e){
             console.log("Some error while parsing, check your JSON data")
         }
     })
+
 })

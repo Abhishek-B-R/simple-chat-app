@@ -13,6 +13,7 @@ function App() {
   const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {
+    // wsRef.current = new WebSocket("wss://simple-chat-app-115i.onrender.com");
     wsRef.current = new WebSocket("ws://localhost:8080");
 
     wsRef.current.onopen = () => {
