@@ -26,7 +26,7 @@ wss.on("connection",(socket:WebSocket)=>{
 
                 const allNames: string[] = []
                 allSocket.filter((e)=>e.room===roomId).forEach((e)=>{
-                    allNames.push(e.name)
+                    allNames.push(e.name.trim().toLowerCase())
                 })
 
                 allSocket.filter((e)=>e.room===roomId).forEach((e)=>{

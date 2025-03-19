@@ -2,8 +2,8 @@ import { Button } from "./components/ui/button";
 import { ScrollArea } from "./components/ui/scroll-area"
 import { Separator } from "./components/ui/separator"
 import { Users, LogOut } from "lucide-react";
-export default function Participants({logout,participants}:
-  {logout:()=>void,participants: string[]})
+export default function Participants({logout,participants,name}:
+  {logout:()=>void,participants: string[],name:string})
   {
       return (
         <div className='bg-emerald-900 text-white fixed h-full hidden md:block'>
@@ -25,7 +25,7 @@ export default function Participants({logout,participants}:
                       key={index}
                       className="p-2 rounded-lg bg-muted/20 text-sm font-medium"
                     >
-                      {participant}
+                      {participant===name?participant+" (You)":participant}
                     </div>
                   ))}
                 </div>

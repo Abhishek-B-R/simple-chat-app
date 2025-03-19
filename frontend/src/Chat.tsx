@@ -59,7 +59,7 @@ export default function Chat({
 
       return (
         <div className="h-screen w-full flex bg-background"> 
-          <Participants logout={logout} participants={participants}/>
+          <Participants logout={logout} participants={participants} name={name}/>
 
           {/* Chat Section */}
         <div className="w-full md:ml-80 flex flex-col">

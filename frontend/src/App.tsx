@@ -13,20 +13,54 @@ function App() {
   const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {
-    wsRef.current = new WebSocket("wss://simple-chat-app-115i.onrender.com");
-    //wsRef.current = new WebSocket("ws://localhost:8080");
+    let retries = 0;
+    const maxRetries = 10;
+    const retryInterval = 3000;
 
-    wsRef.current.onopen = () => {
-      console.log("WebSocket Connected");
-      setWsConnected(true);
+    async function waitForWebSocket(url:string) {
+      return new Promise((resolve, reject) => {
+        const ws = new WebSocket(url);
+
+        ws.onopen = () => {
+          console.log("WebSocket Connected 🎉");
+          resolve(ws);
+        };
+
+        ws.onerror = (error) => {
+          console.error("WebSocket Error", error);
+          reject(error);
+        };
+
+        ws.onclose = () => {
+          console.log("WebSocket Closed");
+        };      
+      });
     }
-    wsRef.current.onerror = (error) => console.error("WebSocket Error", error);
-    wsRef.current.onclose = () => console.log("WebSocket Closed");
+
+    async function connectWebSocket() {
+      while (retries < maxRetries) {
+        try {
+          console.log(`Attempting connection... (${retries + 1}/${maxRetries})`);
+          wsRef.current = await waitForWebSocket("wss://simple-chat-app-115i.onrender.com") as WebSocket;
+          setWsConnected(true);
+          return; // Exit loop on successful connection
+        } catch (e) {
+          retries++;
+          console.log(`Retrying in ${retryInterval / 1000} seconds...+${e}`);
+          await new Promise((res) => setTimeout(res, retryInterval));
+        }
+      }
+      console.error("Max retries reached. WebSocket connection failed.");
+    }
+
+    connectWebSocket();
 
     return () => {
-        wsRef.current?.close();
+      wsRef.current?.close();
     };
   }, []);
+
+
 
   if (!wsConnected) {
     return <div>Loading...</div>;
