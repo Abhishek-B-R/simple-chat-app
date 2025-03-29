@@ -40,7 +40,8 @@ function App() {
     async function connectWebSocket() {
       while (retries < maxRetries) {
         try {
-          console.log(`Attempting connection... (${retries + 1}/${maxRetries})`);
+          console.log(`Attempting connection... (${retries + 1}/${maxRetries})
+            The backend has to be cold restarted, it might take upto 40-50sec please wait`);
           wsRef.current = await waitForWebSocket("wss://simple-chat-app-115i.onrender.com") as WebSocket;
           setWsConnected(true);
           return; // Exit loop on successful connection
